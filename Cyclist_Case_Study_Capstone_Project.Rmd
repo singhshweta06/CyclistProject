@@ -1,0 +1,449 @@
+---
+title: "Case Study: How Does a Bike-Share Navigate Speedy Success"
+author: "Shweta Singh"
+date: "2024-12-08"
+output: html_document
+---
+
+## Overview & Business Task
+
+### Introduction
+Welcome to the Cyclistic bike-share analysis case study! In this case study, I would be working for a fictional company, **Cyclistic**, along with some key team members. In order to answer the business questions, I will follow the steps of the data analysis process: **Ask, Prepare, Process, Analyze, Share, and Act**.  
+
+### Scenario
+I am a junior data analyst working on the marketing analyst team at **Cyclistic, a bike-share company in Chicago**. The director of marketing believes the company’s future success depends on maximizing the number of annual memberships. Therefore, my team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, my team will design a **new marketing strategy to convert casual riders into annual members**. But first, Cyclistic executives must approve my recommendations, so they must be backed up with compelling data insights and professional data visualizations.
+
+### About the company
+In 2016, Cyclistic launched a successful bike-share offering. Since then, the program has grown to a fleet of 5,824 bicycles that are geotracked and locked into a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system anytime.
+
+Cyclistic sets itself apart by also offering reclining bikes, hand tricycles, and cargo bikes, making bike-share more inclusive to people with disabilities and riders who can’t use a standard two-wheeled bike. The majority of riders opt for traditional bikes; about 8% of riders use the assistive options. Cyclistic users are more likely to ride for leisure, but about 30% use the bikes to commute to work each day.
+
+Until now, Cyclistic’s marketing strategy relied on building general awareness and appealing to broad consumer segments. One approach that helped make these things possible was the flexibility of its pricing plans: single-ride passes, full-day passes, and annual memberships. Customers who purchase single-ride or full-day passes are referred to as casual riders.Customers who purchase annual memberships are Cyclistic members.
+
+Cyclistic’s finance analysts have concluded that annual members are much more profitable than casual riders. Although the pricing flexibility helps Cyclistic attract more customers, the director of Marketing , Lily Moreno, believes that maximizing the number of annual members will be key to future growth. Rather than creating a marketing campaign that targets all-new customers, Moreno believes
+there is a solid opportunity to convert casual riders into members. She notes that casual riders are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs.
+
+Moreno has set a clear goal: **Design marketing strategies aimed at converting casual riders into annual members**. In order to do that, however, the team needs to better understand **how annual members and casual riders differ, why casual riders would buy a membership, and how digital media could affect their marketing tactics**. Moreno and her team are interested in analyzing the Cyclistic historical bike trip data to identify trends.
+
+Three questions will guide the future marketing program:
+1. How do annual members and casual riders use Cyclistic bikes differently?
+2. Why would casual riders buy Cyclistic annual memberships?
+3. How can Cyclistic use digital media to influence casual riders to become members?
+
+Moreno has assigned me the first question to answer: **How do annual members and casual riders use Cyclistic bikes differently?**
+
+
+## STEP 1: ASK
+
+### Key Stakeholders
+
+● Lily Moreno: The director of marketing and my manager
+● Cyclistic marketing analytics team: Team responsible for collecting, analyzing, and reporting data that helps guide Cyclistic marketing strategy
+● Cyclistic executive team: Executive team that will decide whether to approve the recommended marketing program
+
+### Business Task
+
+Analyzing the Cyclistic historical bike trip data to identify trends and patterns in bike usage by different types of riders, in order to convert maximum number of casual riders to annual members as part of the overall marketing strategy.
+
+
+## STEP 2: PREPARE
+
+### Data Source
+
+In a real-life scenario I would be using Cyclistic’s historical trip data to analyze and identify trends. However since Cyclistic
+is a fictional company, for the purposes of this case study I will be using a public data set (link [here](https://divvy-tripdata.s3.amazonaws.com/index.html)) made available by Motivate International Inc. under this [license](https://divvybikes.com/data-license-agreement). This is actual trip data from Divvy, a real bikeshare company based in Chicago and operated by Lyft. 
+
+
+Here are the steps I followed for this phase:
+
+1. I downloaded the zipped folders containing CSV files with data for the last 12 months (Dec'2023 - Nov'2024) and stored them on my local drive. 
+
+2. To familiarize myself with the data sets I took a look at few of the files in Excel. I could see that the each file contains trip details from that month with features such as ride id, bike type, start and end time stamps, start and end station names, ids and coordinates, and member type. I could observe a lot of missing details in the start and end station id and names.
+
+3. I used R Studio to import the 12 files into data frames, carried out a check to ensure column names match across all 12 data frames, and then merged them into a single data frame to prepare for the next phase. 
+
+ROCCC: This data set is original (first-hand data from a primary source), current (last 12 months) and cited. While at first glance there doesn't seem to be any bias in the data, I will need to check for any inaccuracies and missing data. I also think the data could have included a few more details around user profile (gender, age etc) for it to be more comprehensive and to enable me to share sharper insights on targeting the right kind of casual members for maximum effect.  
+
+Importing packages: 
+
+```{r}
+library(tidyverse)
+install.packages("janitor")
+library(janitor)
+library(lubridate)
+library(scales)
+```
+
+Importing the data for last 12 months into 12 individual data frames:
+
+```{r}
+
+df1 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202312-divvy-tripdata.csv")
+df2 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202401-divvy-tripdata.csv")
+df3 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202402-divvy-tripdata.csv")
+df4 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202403-divvy-tripdata.csv")
+df5 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202404-divvy-tripdata.csv")
+df6 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202405-divvy-tripdata.csv")
+df7 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202406-divvy-tripdata.csv")
+df8 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202407-divvy-tripdata.csv")
+df9 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202408-divvy-tripdata.csv")
+df10 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202409-divvy-tripdata.csv")
+df11 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202410-divvy-tripdata.csv")
+df12 <- read.csv("C:/Users/shwet/Desktop/DataAnalytics/Capstone/RawData/202411-divvy-tripdata.csv")
+```
+
+Checking if column names and data types match in all files:
+
+```{r}
+
+str(df1)
+str(df2)
+str(df3)
+str(df4)
+str(df5)
+str(df6)
+str(df7)
+str(df8)
+str(df9)
+str(df10)
+str(df11)
+str(df12)
+```
+
+Combining the 12 data frames into a single master data frame to be used for analysis:
+
+```{r}
+all_rides <- rbind(df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12)
+```
+
+
+## STEP 3: PROCESS
+
+This is the data cleaning and wrangling phase. For this process I have used R language and worked in R Studio.
+
+### Data Cleaning
+
+Checking the dimensions of the consolidated data frame:
+
+```{r}
+dim(all_rides)
+```
+
+Checking summary of the consolidated data frame:
+
+```{r}
+summary(all_rides)
+```
+Removing any empty rows:
+
+```{r}
+all_rides <- janitor::remove_empty(all_rides, which = c("rows"))
+```
+
+Removing any duplicate rows:
+
+```{r}
+all_rides <- all_rides[!duplicated(all_rides$ride_id), ]
+dim(all_rides)
+```
+
+Removing NAs:
+
+```{r}
+all_rides <- drop_na(all_rides)
+dim(all_rides)
+```
+
+Checking for typing errors in text fields:
+
+```{r}
+unique(all_rides$member_casual)
+unique(all_rides$rideable_type)
+```
+
+### Data Wrangling
+
+Converting start and end fields from char to date/time format: 
+
+```{r}
+all_rides$started_at <- lubridate::ymd_hms(all_rides$started_at)
+all_rides$ended_at <- lubridate::ymd_hms(all_rides$ended_at)
+```
+
+Creating additional columns for trip start hours, months, day of the week and creating new category for season :
+
+```{r}
+all_rides$start_hour <- lubridate::hour(all_rides$started_at)
+all_rides$start_date <- as.Date(all_rides$started_at)
+all_rides$day_of_week <- weekdays(as.Date(all_rides$start_date))
+all_rides$start_month <- format(as.Date(all_rides$start_date), "%m")
+all_rides <- all_rides %>% mutate(season = 
+  case_when(start_month == "03" ~ "Spring",
+            start_month == "04" ~ "Spring",
+            start_month == "05" ~ "Spring",
+            start_month == "06" ~ "Summer",
+            start_month == "07" ~ "Summer",
+            start_month == "08" ~ "Summer",
+            start_month == "09" ~ "Fall",
+            start_month == "10" ~ "Fall",
+            start_month == "11" ~ "Fall",
+            start_month == "12" ~ "Winter",
+            start_month == "01" ~ "Winter",
+            start_month == "02" ~ "Winter")
+            )
+all_rides <- all_rides %>% 
+  mutate(day_type = 
+  case_when(day_of_week == "Monday" ~ "Weekday",
+            day_of_week == "Tuesday" ~ "Weekday",
+            day_of_week == "Wednesday" ~ "Weekday",
+            day_of_week == "Thursday" ~ "Weekday",
+            day_of_week == "Friday" ~ "Weekday",
+            day_of_week == "Saturday" ~ "Weekend",
+            day_of_week == "Sunday" ~ "Weekend",
+            ) 
+            )
+
+
+```
+
+
+Calculating ride duration:
+
+```{r}
+all_rides$ride_length <- difftime(all_rides$ended_at, all_rides$started_at, units = c("mins"))
+head(all_rides)
+```
+
+
+Converting ride_length to numeric :
+
+```{r}
+all_rides$ride_length <- as.numeric(as.character(all_rides$ride_length))
+
+```
+Checking for outliers in ride_length :
+
+```{r}
+##boxplot(all_rides$ride_length,main = "Distribution of Ride Length", horizontal = TRUE, xlab = "Ride Length")
+
+```
+
+Removing all rides with duration <=0
+
+```{r}
+all_rides <- filter(all_rides, ride_length > 0)
+dim(all_rides)
+```
+I'm also interested in checking for patterns in the most popular stations for casual riders vs annual members, however While glimpsing at the data in Excel, I had observed missing values in the start & end station details. Time to test this:
+
+```{r}
+dim(all_rides %>% 
+  filter(start_station_name=="", start_station_id==""))
+```
+~1 million values are missing! If I want to do any analysis on the start stations/routes, I'll have to ignore almost 18% of my data. I will skip this line of exploration. 
+
+With this, my data is now ready for analysis.
+
+## STEP 4: ANALYSIS
+
+
+Creating a summary of ride length:
+
+```{r}
+summary(all_rides$ride_length)
+
+```
+# Compare members and casual users
+```{r}
+aggregate(all_rides$ride_length ~ all_rides$member_casual, FUN = mean)
+aggregate(all_rides$ride_length ~ all_rides$member_casual, FUN = median)
+aggregate(all_rides$ride_length ~ all_rides$member_casual, FUN = max)
+aggregate(all_rides$ride_length ~ all_rides$member_casual, FUN = min)
+```
+Average ride time - annual members vs casual riders:
+```{r}
+all_rides %>%      
+  group_by(member_casual) %>%      
+  summarize(m = mean(ride_length)) %>%
+  ggplot() +
+  geom_col(mapping = aes(x=member_casual, y=m, fill = member_casual), width = 0.3)+
+  labs(x = "Rider Type", title = "Average Ride Time by Rider Type", y = "Average Ride Time (mins)")+
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+```
+Frequency of rides by Rider Type:
+```{r}
+all_rides %>%      
+  ggplot() + 
+  geom_bar(mapping = aes(x=member_casual, fill = member_casual), position = "dodge", width = 0.3) +
+  scale_y_continuous(labels=comma) +
+  labs(x = "Rider Type", title = "Frequency of Rides by Rider Type", y = "Frequency", fill = "Rider Type")+
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+
+```
+
+
+
+Average ride time by day of the week for annual members vs casual riders:
+```{r}
+# Bringing days of the week in order
+all_rides$day_of_week <- ordered(all_rides$day_of_week, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"))
+
+# Plotting 
+all_rides %>%      
+  group_by(member_casual, day_of_week) %>%      
+  summarize(m = mean(ride_length), .groups = 'keep') %>% 
+  ggplot() + 
+  geom_col(mapping = aes(x=day_of_week, y = m, fill = member_casual), position = "dodge") +
+  labs(
+    x = "Day of Week", 
+    title = "Average Ride Time by Day of Week and Rider Type", 
+    y = "Average Ride Time (mins)",      
+    fill = "Rider Type") +
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+  
+```
+Frequency of rides by day of week and member type:
+
+```{r}
+all_rides %>%      
+  ggplot() + 
+  geom_bar(mapping = aes(x=day_of_week, fill = member_casual), position = "dodge") +
+  scale_y_continuous(labels=comma) +
+  labs(x = "Day of Week", title = "Frequency of Rides by Day of Week and Rider Type", y = "Frequency", fill = "Rider Type")+
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+```
+
+Weekend vs Weekday Usage:
+
+```{r}
+all_rides %>%  
+  group_by(day_type,member_casual) %>%      
+  summarize(ride_count = n(), .groups = 'keep') %>% 
+  ggplot() + 
+  geom_col(mapping = aes(x=ride_count, y=fct_reorder(day_type, ride_count), fill = member_casual), width = 0.5, position = "dodge") +
+  scale_x_continuous(labels=comma, position = "top",, limits = c(0, 3000000), breaks = seq(0, 3000000, by = 500000)) +
+  labs(title = "Weekend vs Weekday Bike Usage across Rider Types")+
+    scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.x = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+    axis.line.y.left = element_line(color = "black"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+```
+
+
+Frequency of Rides by Month :
+```{r}
+all_rides %>%      
+  ggplot() + 
+  geom_bar(mapping = aes(x=start_month, fill = member_casual), position = "dodge") +
+  scale_y_continuous(labels=comma) +
+  labs(x = "Month", title = "Frequency of Rides by Month and Rider Type", y = "Frequency", fill = "Rider Type") +
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+
+```
+Bike Type by Rider Type:
+
+```{r}
+all_rides %>%  
+  group_by(rideable_type,member_casual) %>%      
+  summarize(ride_count = n(), .groups = 'keep') %>% 
+  ggplot() + 
+  geom_col(mapping = aes(x=ride_count, y=fct_reorder(rideable_type, ride_count), fill = member_casual), width = 0.5, position = "dodge") +
+  scale_x_continuous(labels=comma, position = "top", limits = c(0, 2000000), breaks = seq(0, 2000000, by = 500000)) +
+  labs(title = "Frequency of Rides by Bike and Rider Type")+
+  scale_y_discrete(labels = c("Electric Scooter", "Classic Bike", "Electric Bike"))+
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.x = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+    axis.line.y.left = element_line(color = "black"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+```
+
+Frequency or Rides by Season and Rider Type:
+
+```{r}
+all_rides %>%  
+  group_by(season,member_casual) %>%      
+  summarize(ride_count = n(), .groups = 'keep') %>% 
+  ggplot() + 
+  geom_col(mapping = aes(x=ride_count, y=fct_reorder(season, ride_count), fill = member_casual), width = 0.5, position = "dodge") +
+  scale_x_continuous(labels=comma, position = "top", limits = c(0, 2000000), breaks = seq(0, 2000000, by = 500000)) +
+  labs(title = "Frequency of Rides by Season and Rider Type")+
+    scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.x = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+    axis.line.y.left = element_line(color = "black"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
+```
+Usage Pattern by hour of day:
+
+```{r}
+all_rides %>%      
+  ggplot() + 
+  geom_bar(mapping = aes(x=start_hour, fill = member_casual), position = "dodge") +
+  scale_y_continuous(labels=comma) +
+  labs(x = "Hour", title = "Frequency of Rides by Hour of day and Rider Type", y = "Frequency", fill = "Rider Type") +
+  scale_fill_discrete(name = "Rider Type",labels = c("Casual Rider", "Annual Member")) + 
+  theme(
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.major.y = element_line(color = "#A8BAC4", size = 0.3), 
+    axis.ticks.length = unit(0,    "mm"), 
+     )
+```
+```{r}
+all_rides 
+  ggplot() + 
+  geom_line(aes(x= start_hour, color = member_casual))
+```
+
+
+
+## STEP 5: SHARE
+
+Going back to the key question posed to me - "How do annual members and casual riders use Cyclistic bikes differently?", here are the major patterns I could find in the usage differences:  
+
+1. On an average trip, Casual riders ride Cyclistic bikes for 1.72x longer time than annual members.
+
+2. Casual members see a lot of Weekday vs Weekend
+
+3. Summer vs rest of the year
+
+4. Type of bike - 
+
